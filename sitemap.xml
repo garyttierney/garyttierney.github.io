@@ -2,42 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
         <loc>https://protectyour.pw/about.html</loc>
-        <lastmod>2016-12-18T20:41:33.861Z</lastmod>
+        <lastmod>2016-12-18T21:07:48.558Z</lastmod>
         <changefreq>weekly</changefreq>
     </url>
     <url>
         <loc>https://protectyour.pw/contact.html</loc>
-        <lastmod>2016-12-18T20:41:33.876Z</lastmod>
+        <lastmod>2016-12-18T21:07:48.578Z</lastmod>
         <changefreq>weekly</changefreq>
     </url>
     <url>
         <loc>https://protectyour.pw/</loc>
-        <lastmod>2016-12-18T20:41:33.878Z</lastmod>
+        <lastmod>2016-12-18T21:07:48.581Z</lastmod>
         <changefreq>weekly</changefreq>
     </url>
     <url>
         <loc>https://protectyour.pw/projects.html</loc>
-        <lastmod>2016-12-18T20:41:33.881Z</lastmod>
+        <lastmod>2016-12-18T21:07:48.584Z</lastmod>
         <changefreq>weekly</changefreq>
     </url>
     <url>
         <loc>https://protectyour.pw/archives/page-1.html</loc>
-        <lastmod>2016-12-18T20:41:33.111Z</lastmod>
-        <changefreq>weekly</changefreq>
-    </url>
-    <url>
-        <loc>https://protectyour.pw/archives/page-2.html</loc>
-        <lastmod>2016-12-17T22:58:02.775Z</lastmod>
+        <lastmod>2016-12-18T21:07:48.335Z</lastmod>
         <changefreq>weekly</changefreq>
     </url>
     <url>
         <loc>https://protectyour.pw/posts/1-symfony-selinux.html</loc>
-        <lastmod>2016-12-18T20:41:33.084Z</lastmod>
+        <lastmod>2016-12-18T21:07:48.309Z</lastmod>
         <changefreq>weekly</changefreq>
     </url>
     <url>
         <loc>https://protectyour.pw/posts/2-testing-kernel-changes-fedora.html</loc>
-        <lastmod>2016-12-18T20:41:33.085Z</lastmod>
+        <lastmod>2016-12-18T21:07:48.309Z</lastmod>
         <changefreq>weekly</changefreq>
     </url>
 </urlset>
