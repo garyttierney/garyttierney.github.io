@@ -1,0 +1,187 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head itemscope itemtype="http://schema.org/WebSite">
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>
+    Testing Linux kernel changes on Fedora with qemu - protectyourpw
+</title>
+    <meta name="robots" content="index,follow">
+    <meta itemprop="name" content="protectyourpw"/>
+    <meta itemprop="url" content="https://protectyour.pw/"/>
+    <meta itemprop="creator" content="Gary Tierney"/>
+    <meta itemprop="description" name="description" content="A website and blog about Linux and programming.">
+
+    
+    <meta name="keywords" content="fedora,selinux,linux,kernel,qemu">
+
+    <link rel="stylesheet" href="/css/main.css" />
+    <script type="text/javascript">
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                        (i[r].q = i[r].q || []).push(arguments)
+                    }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                    m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-77012516-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="name, gary.tierney@gmx.com">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel='shortcut icon' type='image/x-icon' href='/assets/favicon.ico'/>
+    <link rel='shortcut icon' type='image/svg' sizes="any" href='/assets/favicon.svg'/>
+    <link rel='shortcut icon' type='image/png' href='/assets/favicon.png'/>
+</head>
+<body>
+
+<div class="container">
+    
+    <header class="row">
+        <div class="five columns">
+            <h1><a href="/">protectyourpw</a></h1>
+            <small>A blog about Linux and programming</small>
+        </div>
+        <div class="seven columns">
+            <nav role="navigation" itemscope itemtype="https://schema.org/SiteNavigationElement">
+                <ul>
+                    <li><a href="/index.html">Home</a></li>
+                    <li><a href="/about.html">About</a></li>
+                    <li><a href="/contact.html">Contact</a></li>
+                    <li>
+    
+        <a href="/archives/page-1.html">Blog</a>
+    
+</li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        
+    <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+        <header class="row">
+            <h2 class="eight columns" itemprop="name">Testing Linux kernel changes on Fedora with qemu</h2>
+            <aside class="four columns">
+                <span class="reading-time" style="display:block;">
+                <i class="fa fa-clock-o" aria-hidden="true"></i> 5 min read
+                </span>
+                <time datetime="2016-12-17T02:36" itemprop="datePublished">2016-12-17</time>
+            </aside>
+        </header>
+
+        <section itemprop="articleBody">
+            <p>I&#39;ve been interested in contributing to the kernel for a while now,
+and recently I&#39;ve been looking into the best workflow for doing that.  I&#39;d need
+a quick way to build the kernel and test my changes.  Though, since I&#39;m mostly
+interested in the SELinux subsystem I generally need a lot of userspace tools to
+use with the kernel.</p>
+<p>Using mkosi from the systemd guys, I was able to quickly build a rootfs and boot
+my compiled kernel with qemu.  This made it quite convenient to test my changes.
+<!---more--></p>
+<h3 id="step-1-getting-and-configuring-the-kernel">Step 1.  Getting and configuring the kernel</h3>
+<p>The first step in testing the kernel, is actually checking it out and
+configuring it.  I took on a trivial issue from
+<a href="https://github.com/selinuxproject/selinux-kernel/issues/1">https://github.com/selinuxproject/selinux-kernel/issues/1</a> so I could
+start to familiarize myself with kernel code..</p>
+<p>The kernel tree that I&#39;m working with is from the SELinux subsystem, so I cloned
+the repository from <a href="https://github.com/SELinuxProject/selinux-kernel.git">https://github.com/SELinuxProject/selinux-kernel.git</a> and
+checked out the &quot;next&quot; branch.</p>
+<p>Next I need to configure my kernel build.  If I run &quot;make menuconfig&quot; then by
+default I&#39;ll get a copy of my distributions kernel configuration if it is
+available, which can be less than desirable due to the wide range of support
+that distributions usually offer and the impact that&#39;ll have on my build times.</p>
+<p>Instead I want to create a minimal kernel configuration, which I can do using
+make allnoconfig.</p>
+<pre class="editor editor-colors"><div class="line"><span class="source shell"><span>make&nbsp;allnoconfig</span></span></div></pre><p>Although, for simplicity here I&#39;m going to generate a config using the
+x86_64_defconfig optoin.</p>
+<pre class="editor editor-colors"><div class="line"><span class="source shell"><span>make&nbsp;x86_64_defconfig</span></span></div></pre><p>This gets me a reasonably small kernel image, and the build times aren&#39;t too bad
+past the initial build.</p>
+<h3 id="step-2-building-the-kernel">Step 2.  Building the kernel</h3>
+<p>Now that I have the kernel configured I can kick off a build to test it out, and
+reduce the build times when I make some changes:</p>
+<pre class="editor editor-colors"><div class="line"><span class="source shell"><span>make&nbsp;-j8&nbsp;bzImage</span></span></div></pre><p>This could take quite a while, though I could reduce the build times quite a
+bit by stripping out unnecessary drivers and components from my kernel
+configuration.  Once it finishes I can test it with qemu and get it to boot
+(albeit with a kernel panic because there&#39;s no rootfs):</p>
+<pre class="editor editor-colors"><div class="line"><span class="text plain null-grammar"><span>qemu-kvm&nbsp;-kernel&nbsp;arch/x86_64/boot/bzImage</span></span></div></pre><p>Once I <code>git am</code> the patches below, I can rebuild the kernel with <code>make -j8
+bzImage</code> and create a root filesystem to test out my changes with.</p>
+<p><em>patchset</em></p>
+<script
+src="https://gist.github.com/garyttierney/8d6dce7fde0383b85eae9bae99e9c420.js"></script>
+
+<h3 id="step-3-creating-a-root-filesystem">Step 3.  Creating a root filesystem</h3>
+<p>The mkosi tool mentioned at the beginning of this post is useful for a number of
+reasons.  The images it produces can be booted with systemd-nspawn, and it
+can also output images in a number of formats, for a number of distributions.</p>
+<p>I&#39;ll be using it to create a GPT disk image, with a single ext4 partition
+containing a Fedora 25 root filesystem.  By default, mkosi builds Fedora images
+without an SELinux policy included so I&#39;ll need to create my own configuration
+file for mkosi to load.</p>
+<p><em>mkosi.default</em></p>
+<pre class="editor editor-colors"><div class="line"><span class="text plain null-grammar"><span>[Distribution]</span></span></div><div class="line"><span class="text plain null-grammar"><span>Distribution=fedora</span></span></div><div class="line"><span class="text plain null-grammar"><span>Release=25</span></span></div><div class="line"><span class="text plain null-grammar"><span>&nbsp;</span></span></div><div class="line"><span class="text plain null-grammar"><span>[Output]</span></span></div><div class="line"><span class="text plain null-grammar"><span>Format=raw_gpt</span></span></div><div class="line"><span class="text plain null-grammar"><span>&nbsp;</span></span></div><div class="line"><span class="text plain null-grammar"><span>[Packages]</span></span></div><div class="line"><span class="text plain null-grammar"><span>Cache=mkosi.cache/</span></span></div><div class="line"><span class="text plain null-grammar"><span>Packages=libselinux-utils&nbsp;selinux-policy&nbsp;selinux-policy-targeted</span></span></div><div class="line"><span class="text plain null-grammar"><span>&nbsp;&nbsp;&nbsp;&nbsp;policycoreutils&nbsp;procps-ng&nbsp;findutils&nbsp;setools-console</span></span></div><div class="line"><span class="text plain null-grammar"><span>&nbsp;</span></span></div><div class="line"><span class="text plain null-grammar"><span>[Validation]</span></span></div><div class="line"><span class="text plain null-grammar"><span>Password=myrootpw</span></span></div></pre><p>As you probably gathered, this will create a Fedora 25 image with the given list
+of packages and set the root password to &quot;myrootpw&quot;.  The cache option makes the
+package manager retain downloaded packages for later runs.  This is quite useful
+if there&#39;s an issue in the build or we make additions. If I create this as is I
+can boot it with systemd-nspawn and play around in the container:</p>
+<pre class="editor editor-colors"><div class="line"><span class="source shell"><span>mkosi</span></span></div><div class="line"><span class="source shell"><span>systemd-nspawn&nbsp;-bi&nbsp;image.raw</span></span></div></pre><p>Though I&#39;ll also need to relabel the system, and I&#39;ve hit a bug which is
+preventing selinux-autorelabel from starting (systemd wants to relabel files it
+has no access to before systemd-autorelabel starts).  So I&#39;ll create a post-install
+script which will put the system into permissive mode and instruct the system to
+relabel on next boot.</p>
+<p><em>mkosi.postinst</em></p>
+<pre class="editor editor-colors"><div class="line"><span class="source shell"><span class="comment line number-sign shell"><span class="punctuation definition comment shell"><span>#</span></span><span>!/bin/sh</span><span>&nbsp;</span></span></span></div><div class="line"><span class="source shell"><span>&nbsp;</span></span></div><div class="line"><span class="source shell"><span>sed&nbsp;-i&nbsp;</span><span class="string quoted single shell"><span class="punctuation definition string begin shell"><span>&#39;</span></span><span>s/enforcing/permissive/</span><span class="punctuation definition string end shell"><span>&#39;</span></span></span><span>&nbsp;/etc/selinux/config</span></span></div><div class="line"><span class="source shell"><span>fixfiles&nbsp;-F&nbsp;onboot</span></span></div></pre><p>Running <code>mkosi</code> again regenerates the image and runs the post-installer script
+inside the root fs before exeting.</p>
+<h3 id="step-4-booting-the-kernel-with-the-root-filesystem">Step 4.  Booting the kernel with the root filesystem</h3>
+<p>I have everything I need now to test my patches and can boot the system to test
+it out:</p>
+<pre class="editor editor-colors"><div class="line"><span class="source shell"><span>qemu-kvm&nbsp;-kernel&nbsp;arch/x86_64/boot/bzImage&nbsp;\</span></span></div><div class="line"><span class="source shell"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-drive&nbsp;format=raw,file=image.raw</span></span></div><div class="line"><span class="source shell"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-append&nbsp;</span><span class="string quoted double shell"><span class="punctuation definition string begin shell"><span>&quot;</span></span><span>root=/dev/sda1&nbsp;rw&nbsp;rootfstype=ext4&nbsp;console=ttyS0</span><span class="punctuation definition string end shell"><span>&quot;</span></span></span><span>&nbsp;\</span></span></div><div class="line"><span class="source shell"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-m&nbsp;256M&nbsp;-curses</span></span></div></pre><p>The system doesn&#39;t take long to boot and I can see my changes almost
+immediately.  Considering the initial build of the root fs and the kernel tree
+are the only long processes involved, I think it&#39;s quite a convenient way to
+test kernel changes on a full-blown distro.</p>
+<p>From an already compiled kernel tree and built mkosi image I can apply my
+patches and see results in ~1m:</p>
+<script type="text/javascript"
+src="https://asciinema.org/a/04ct05ku01kr9r87fwhbe33o8.js"
+id="asciicast-04ct05ku01kr9r87fwhbe33o8" async></script>
+
+<h3 id="additional-resources">Additional Resources</h3>
+<ul>
+<li>mkosi - <a href="https://github.com/systemd/mkosi">https://github.com/systemd/mkosi</a></li>
+<li>Virtualizing the running system - <a href="https://github.com/amluto/virtme">https://github.com/amluto/virtme</a></li>
+<li>Debugging the kernel - <a href="http://www.linux-magazine.com/Online/Features/Qemu-and-the-Kernel">http://www.linux-magazine.com/Online/Features/Qemu-and-the-Kernel</a></li>
+</ul>
+
+        </section>
+
+    </article>
+    <hr>
+
+    </main>
+
+    <script type="text/javascript">
+        WebFontConfig = {
+            google: {families: ['Droid+Sans:400,700:latin']}
+        };
+        (function () {
+            var wf = document.createElement('script');
+            wf.src = 'https://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+            wf.type = 'text/javascript';
+            wf.async = 'true';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(wf, s);
+
+
+        })();
+    </script>
+</div>
+
+</body>
+</html>
