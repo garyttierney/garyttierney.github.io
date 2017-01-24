@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://protectyour.pw/about.html</loc>
-        <lastmod>2016-12-18T21:37:02.534Z</lastmod>
+        <loc>https://garyttierney.github.io/about.html</loc>
+        <lastmod>2017-01-24T13:53:03.906Z</lastmod>
         <changefreq>weekly</changefreq>
     </url>
     <url>
-        <loc>https://protectyour.pw/contact.html</loc>
-        <lastmod>2016-12-18T21:37:02.555Z</lastmod>
+        <loc>https://garyttierney.github.io/contact.html</loc>
+        <lastmod>2017-01-24T13:53:03.932Z</lastmod>
         <changefreq>weekly</changefreq>
     </url>
     <url>
-        <loc>https://protectyour.pw/</loc>
-        <lastmod>2016-12-18T21:37:02.558Z</lastmod>
+        <loc>https://garyttierney.github.io/</loc>
+        <lastmod>2017-01-24T13:53:03.938Z</lastmod>
         <changefreq>weekly</changefreq>
     </url>
     <url>
-        <loc>https://protectyour.pw/projects.html</loc>
-        <lastmod>2016-12-18T21:37:02.561Z</lastmod>
+        <loc>https://garyttierney.github.io/projects.html</loc>
+        <lastmod>2017-01-24T13:53:03.939Z</lastmod>
         <changefreq>weekly</changefreq>
     </url>
     <url>
-        <loc>https://protectyour.pw/archives/page-1.html</loc>
-        <lastmod>2016-12-18T21:37:02.291Z</lastmod>
+        <loc>https://garyttierney.github.io/archives/page-1.html</loc>
+        <lastmod>2017-01-24T13:53:03.524Z</lastmod>
         <changefreq>weekly</changefreq>
     </url>
     <url>
-        <loc>https://protectyour.pw/posts/1-symfony-selinux.html</loc>
-        <lastmod>2016-12-18T21:37:02.254Z</lastmod>
+        <loc>https://garyttierney.github.io/posts/1-symfony-selinux.html</loc>
+        <lastmod>2017-01-24T13:53:03.475Z</lastmod>
         <changefreq>weekly</changefreq>
     </url>
     <url>
-        <loc>https://protectyour.pw/posts/2-testing-kernel-changes-fedora.html</loc>
-        <lastmod>2016-12-18T21:37:02.255Z</lastmod>
+        <loc>https://garyttierney.github.io/posts/2-testing-kernel-changes-fedora.html</loc>
+        <lastmod>2017-01-24T13:53:03.477Z</lastmod>
         <changefreq>weekly</changefreq>
     </url>
 </urlset>
